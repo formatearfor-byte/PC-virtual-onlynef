@@ -14,17 +14,35 @@ jobs:
 
       - name: Instalar escritorio y VNC
         run: |
-          sudo apt install -y xfce4 xfce4-goodies tigervnc-standalone-server
+          sudo apt install -y xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
 
       - name: Configurar VNC
         run: |
           mkdir -p ~/.vnc
-          echo "xfce4-session" > ~/.vnc/xstartup
+
+          # Contraseña VNC: 12345678
+          echo "12345678" | vncpasswd -f > ~/.vnc/passwd
+          chmod 600 ~/.vnc/passwd
+
+          cat > ~/.vnc/xstartup <<'EOF'
+          #!/bin/sh
+          unset SESSION_MANAGER
+          unset DBUS_SESSION_BUS_ADDRESS
+          startxfce4 &
+          EOF
+
           chmod +x ~/.vnc/xstartup
 
-          vncserver :1 -geometry 1280x720 -depth 24
+          vncserver :1 \
+            -geometry 1280x720 \
+            -depth 24 \
+            -localhost no \
+            -rfbport 5901 \
+            -PasswordFile ~/.vnc/passwd
 
-      - name: Mostrar información
+      - name: Mantener PC virtual encendida
         run: |
-          echo "Servidor VNC iniciado en el puerto 5901"
+          echo "PC virtual iniciada."
+          echo "VNC: puerto 5901"
+          echo "Contraseña: 12345678"
           sleep 21600
