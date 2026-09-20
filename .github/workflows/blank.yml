@@ -1,0 +1,30 @@
+name: PC Virtual
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pc-virtual:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Actualizar sistema
+        run: |
+          sudo apt update
+
+      - name: Instalar escritorio y VNC
+        run: |
+          sudo apt install -y xfce4 xfce4-goodies tigervnc-standalone-server
+
+      - name: Configurar VNC
+        run: |
+          mkdir -p ~/.vnc
+          echo "xfce4-session" > ~/.vnc/xstartup
+          chmod +x ~/.vnc/xstartup
+
+          vncserver :1 -geometry 1280x720 -depth 24
+
+      - name: Mostrar información
+        run: |
+          echo "Servidor VNC iniciado en el puerto 5901"
+          sleep 21600
